@@ -3,8 +3,11 @@
 Краткое описание проекта, его цели и основные возможности
 
 Ссылки на репозитории сервера и клиента
-Клиент: https://github.com/Semchenkosasha/SpecodezhdaClient.git
-Сервер: https://github.com/Semchenkosasha/SpecodezhdaServer.git
+
+**Клиент: https://github.com/Semchenkosasha/SpecodezhdaClient.git**
+
+**Сервер: https://github.com/Semchenkosasha/SpecodezhdaServer.git**
+
 ---
 
 ## **Содержание**
