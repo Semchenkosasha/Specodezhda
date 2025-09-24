@@ -142,4 +142,4 @@
 
 ## **Контакты**
 
-Автор: email
+Автор: semchenkoaleksandra05@gmail.com
