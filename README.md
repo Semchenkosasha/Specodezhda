@@ -148,6 +148,57 @@
 
 ### Примеры экранов UI
 
+<img width="975" height="477" alt="image" src="https://github.com/user-attachments/assets/3c20df95-0705-4bac-938a-cf6d50f022f9" />
+
+<img width="894" height="509" alt="image" src="https://github.com/user-attachments/assets/f94f60eb-c6c6-425e-8308-817ae74f9b7e" />
+
+<img width="897" height="540" alt="image" src="https://github.com/user-attachments/assets/b36b6dcf-bb43-4019-930c-585be7e74580" />
+
+<img width="975" height="231" alt="image" src="https://github.com/user-attachments/assets/f3f961b6-d177-4b56-aa8c-d4fa188d7c6a" />
+
+<img width="975" height="245" alt="image" src="https://github.com/user-attachments/assets/c91190b7-0a5f-4267-8a5e-a82b80b84723" />
+
+<img width="975" height="350" alt="image" src="https://github.com/user-attachments/assets/014a2bc0-75eb-4ee0-b1c3-9b51af0869ca" />
+
+<img width="934" height="327" alt="image" src="https://github.com/user-attachments/assets/d30f51c7-67a0-4928-a7a4-665c8dbca280" />
+
+<img width="935" height="340" alt="image" src="https://github.com/user-attachments/assets/e22f5636-2794-47a8-a7ff-230eade2f5a4" />
+
+<img width="926" height="337" alt="image" src="https://github.com/user-attachments/assets/01e7d11b-f1a6-42fc-b597-00e975ea8bc4" />
+
+<img width="975" height="475" alt="image" src="https://github.com/user-attachments/assets/5e31452c-560c-4694-b803-9ff68a5802c4" />
+
+<img width="975" height="386" alt="image" src="https://github.com/user-attachments/assets/ae1902ec-3f48-4276-a836-854ce941366b" />
+
+<img width="975" height="466" alt="image" src="https://github.com/user-attachments/assets/8e1ff890-1b17-43eb-89d2-e58a0a45759d" />
+
+<img width="975" height="346" alt="image" src="https://github.com/user-attachments/assets/120cd258-cca8-4a09-b402-6031ca068958" />
+
+<img width="921" height="336" alt="image" src="https://github.com/user-attachments/assets/03573dc6-b89d-4b52-987c-56f489c42fa9" />
+
+<img width="933" height="328" alt="image" src="https://github.com/user-attachments/assets/bc064626-c117-4577-8a68-b6e31603bd98" />
+
+<img width="948" height="377" alt="image" src="https://github.com/user-attachments/assets/9addb022-f7fa-48b4-baee-6373b476a633" />
+
+<img width="975" height="476" alt="image" src="https://github.com/user-attachments/assets/ddff5864-a520-4354-adc9-525ea27ec0d6" />
+
+<img width="975" height="226" alt="image" src="https://github.com/user-attachments/assets/7ed31780-739a-4f00-8809-342823c77618" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 ---
 
 ## **Тестирование**
