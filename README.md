@@ -77,7 +77,8 @@
 
 **Физическая модель базы данных**
 
-<img width="741" height="530" alt="image" src="https://github.com/user-attachments/assets/f7be78ce-3589-4379-be54-0af5915ae158" />
+<img width="788" height="591" alt="image" src="https://github.com/user-attachments/assets/f61cf6ef-d7e7-4edd-9049-481c8c063aa9" />
+
 
 
 ---
