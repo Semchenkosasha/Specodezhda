@@ -153,7 +153,7 @@
 
 Для создания и проверки токенов применяется компонент из библиотеки Spring Security OAuth2 JWT, реализующий механизм JSON Web Token (JWT). Класс JwtProvider использует JwtEncoder из пакета org.springframework.security.oauth2.jwt для генерации и подписи токенов, добавляя в них имя пользователя, срок действия и список ролей. Ниже приведён пример кода, реализующего создание токена.
 
-public String createToken(Authentication authentication) {
+'''public String createToken(Authentication authentication) {
         Instant now = Instant.now();
         long expiresIn = 2;
 
@@ -170,7 +170,7 @@ public String createToken(Authentication authentication) {
                 .build();
 
         return jwtEncoder.encode(JwtEncoderParameters.from(claims)).getTokenValue();
-    }
+    }'''
 
 В данном коде используется внешний компонент JwtEncoder, который выполняет кодирование и подпись JWT-токена на основе переданных данных о пользователе. Метод createToken() формирует объект JwtClaimsSet, в который включаются основные параметры токена – издатель, время выпуска, срок действия, имя пользователя и его роли. После этого эти данные передаются в компонент jwtEncoder, который автоматически шифрует и подписывает токен, обеспечивая его подлинность и защиту от подделки. 
 В проекте предусмотрены механизмы обеспечения безопасности данных. Для защиты паролей пользователей используется компонент PasswordEncoder из фреймворка Spring Security, реализующий хэширование с помощью алгоритма BCrypt. Этот механизм обеспечивает надёжное хранение паролей в базе данных, исключая возможность их прямого прочтения. Ниже представлен код, реализующий хэширование паролей.
