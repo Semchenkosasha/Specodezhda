@@ -141,7 +141,118 @@
 
 ### Безопасность
 
-Описать подходы, использованные для обеспечения безопасности, включая описание процессов аутентификации и авторизации с примерами кода из репозитория сервера
+Аутентификация представляет собой процесс проверки подлинности пользователя по логину и паролю и выдачу JWT-токена, который затем используется при обращении к API. За реализацию аутентификации в проекте отвечают классы UserService, MyUserPrincipal, AuthController, AuthService, JwtProvider и SecurityConfiguration.
+
+Класс UserService реализует интерфейс UserDetailsService, который является стандартным компонентом Spring Security. Его основная функция – загрузка пользователя из базы данных по логину (username). При входе пользователя в систему Spring Security обращается к этому сервису для проверки наличия пользователя и получения его данных, включая пароль и роли. Класс подготавливает объект, содержащий всю необходимую информацию для дальнейшей проверки подлинности. Класс MyUserPrincipal является обёрткой над сущностью AppUser и реализует интерфейс UserDetails. Он передаёт системе безопасности сведения о пользователе: логин, зашифрованный пароль и список ролей (GrantedAuthority). Контроллер AuthController отвечает за обработку HTTP-запросов, связанных с аутентификацией. Основной метод контроллера – getLoginInfo() – вызывается при обращении по адресу /users/login. После успешной аутентификации (проверки логина и пароля) Spring Security передаёт контроллеру объект Authentication, содержащий информацию о пользователе. Контроллер выводит данные о вошедшем пользователе в лог, а затем обращается к сервису AuthService для формирования ответа клиенту. В ответе клиент получает сведения о пользователе и JWT-токен, который используется при последующих запросах. Сервис AuthService реализует бизнес-логику формирования информации о входе. Он получает объект Authentication, извлекает из него пользователя (MyUserPrincipal), преобразует сущность пользователя AppUser в удобный формат UserDto и вызывает компонент JwtProvider для создания токена. После этого сервис формирует карту с двумя ключами: user (информация о пользователе) и token (сгенерированный JWT-токен), которая возвращается контроллеру. Компонент JwtProvider отвечает за непосредственное создание и подпись JWT-токена. При генерации токена он формирует набор claims – данных, которые будут храниться в токене: имя пользователя, время выпуска, срок действия (обычно несколько часов) и список ролей пользователя. Для подписи токена используется асимметричный алгоритм шифрования RSA, что обеспечивает высокий уровень безопасности и предотвращает подделку токенов. Класс использует JwtEncoder из Spring Security OAuth2 и библиотеку Nimbus JOSE + JWT. Конфигурационный класс SecurityConfiguration задаёт общие правила безопасности приложения. Он создаёт и регистрирует фильтры, необходимые для работы Spring Security, отключает CSRF-защиту (что необходимо для REST API), настраивает CORS-доступы, указывает обработчики ошибок аутентификации и авторизации, а также включает поддержку JWT. Внутри класса генерируется пара RSA-ключей – открытый и закрытый, которые используются для шифрования и расшифровки токенов.
+
+Авторизация представляет собой процесс проверки ролей и прав пользователей при обращении к различным ресурсам приложения. За реализацию механизма авторизации в программной системе отвечают такие классы, как SecurityConfiguration, JwtProvider, MyUserPrincipal, UserController, а также обработчики ошибок – CustomBearerTokenAuthenticationEntryPoint и CustomBearerTokenAccessDeniedHandler.
+
+Класс SecurityConfiguration определяет основные правила авторизации и настройки безопасности приложения. В нём задаются фильтры, обрабатывающие входящие HTTP-запросы, конфигурируется механизм проверки JWT-токенов, а также определяется политика доступа к различным эндпоинтам. Через методы настройки (authorizeHttpRequests, oauth2ResourceServer) указывается, какие маршруты доступны без авторизации (например, /users/login), а какие требуют наличия определённой роли. Также в этом классе подключаются обработчики ошибок при отказе в доступе и компонент JwtAuthenticationConverter, обеспечивающий извлечение ролей из токена. Компонент JwtProvider выполняет формирование и проверку JWT-токенов, которые используются для подтверждения прав доступа. При генерации токена в него добавляются роли пользователя, срок действия и другие параметры. При каждом запросе к защищённому ресурсу токен автоматически проверяется: система сверяет подпись токена с RSA-ключом, удостоверяется в его подлинности и достаёт из него данные о пользователе и его ролях. Класс MyUserPrincipal реализует интерфейс UserDetails и связывает сущность пользователя из базы данных с механизмом безопасности Spring Security. Он передаёт в контекст безопасности список ролей, полученных из сущности AppUser. Контроллер UserController демонстрирует практическое применение механизма авторизации. Для ограничения доступа к методам используется аннотация @Secured или @PreAuthorize, с помощью которой задаётся перечень ролей, имеющих право выполнять данный запрос. Дополнительные классы CustomBearerTokenAuthenticationEntryPoint и CustomBearerTokenAccessDeniedHandler отвечают за обработку ошибок авторизации. Первый активируется при попытке доступа без токена или с недействительным токеном, возвращая клиенту сообщение об отсутствии авторизации. Второй вызывается, если пользователь не обладает достаточными правами для выполнения действия.
+
+Совокупная работа перечисленных компонентов формирует надёжную систему авторизации, основанную на сторонних библиотеках Spring Security и JWT. Spring Security обеспечивает базовую инфраструктуру безопасности приложения, включая управление пользователями, проверку паролей, настройку фильтров, разграничение прав доступа и работу с контекстом безопасности. Для безопасного хранения паролей используется компонент PasswordEncoder, который хэширует пароли с использованием соли перед сохранением в базу данных.
+
+Для создания и проверки токенов применяется компонент из библиотеки Spring Security OAuth2 JWT, реализующий механизм JSON Web Token (JWT). Класс JwtProvider использует JwtEncoder из пакета org.springframework.security.oauth2.jwt для генерации и подписи токенов, добавляя в них имя пользователя, срок действия и список ролей. Ниже приведён пример кода, реализующего создание токена.
+
+public String createToken(Authentication authentication) {
+        Instant now = Instant.now();
+        long expiresIn = 2;
+
+        String authorities = authentication.getAuthorities().stream()
+                .map(GrantedAuthority::getAuthority)
+                .collect(Collectors.joining(" "));
+
+        JwtClaimsSet claims = JwtClaimsSet.builder()
+                .issuer("self")
+                .issuedAt(now)
+                .expiresAt(now.plus(expiresIn, ChronoUnit.HOURS))
+                .subject(authentication.getName())
+                .claim("authorities", authorities)
+                .build();
+
+        return jwtEncoder.encode(JwtEncoderParameters.from(claims)).getTokenValue();
+    }
+
+В данном коде используется внешний компонент JwtEncoder, который выполняет кодирование и подпись JWT-токена на основе переданных данных о пользователе. Метод createToken() формирует объект JwtClaimsSet, в который включаются основные параметры токена – издатель, время выпуска, срок действия, имя пользователя и его роли. После этого эти данные передаются в компонент jwtEncoder, который автоматически шифрует и подписывает токен, обеспечивая его подлинность и защиту от подделки. 
+В проекте предусмотрены механизмы обеспечения безопасности данных. Для защиты паролей пользователей используется компонент PasswordEncoder из фреймворка Spring Security, реализующий хэширование с помощью алгоритма BCrypt. Этот механизм обеспечивает надёжное хранение паролей в базе данных, исключая возможность их прямого прочтения. Ниже представлен код, реализующий хэширование паролей.
+
+@Bean
+    public PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder(12);
+    }
+public AppUser save(AppUser user) {
+        if (repository.findByUsername(user.getUsername()).isPresent()) {
+            throw new BadRequestException("Пользователь с таким логином уже существует");
+        }
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
+        if (findAll().isEmpty()) {
+            user.setRole(Role.ADMIN);
+        }
+        return repository.save(user);
+    }
+
+В классе SecurityConfiguration создаётся бин BCryptPasswordEncoder, который реализует безопасное хэширование паролей пользователей. При сохранении нового пользователя в методе save() сервиса UserService пароль перед записью в базу данных преобразуется в зашифрованный хэш с помощью метода passwordEncoder.encode(user.getPassword()). Это гарантирует, что в хранилище не сохраняются реальные пароли, а только их зашифрованные значения. При последующей аутентификации Spring Security автоматически сравнивает введённый пользователем пароль с сохранённым хэшем, используя метод passwordEncoder.matches().
+Также в проекте реализован механизм разграничения прав доступа с использованием аннотаций @Secured, который применяется в классе UserController. Данный контроллер ограничивает доступ к своим методам в зависимости от роли пользователя, указанной в JWT-токене. Например, метод findAll() аннотирован как @Secured({ADMIN}), что означает, что доступ к нему имеют только пользователи с ролью ADMIN. Такой подход обеспечивает систему ролевого разграничения прав доступа, при которой пользователи с различными ролями имеют разные уровни прав. Это повышает безопасность приложения и защищает данные от несанкционированного доступа к функциям, предназначенным только для определённых категорий пользователей. Ниже представлен фрагмент кода.
+
+@Secured({ADMIN})
+    @GetMapping("/all")
+    public Result findAll() {
+        return new Result(
+                true,
+                StatusCode.SUCCESS,
+                "Success Find All",
+service.findAll().stream().map(toDtoConverter::convert).collect(Collectors.toList())
+        );
+    }
+    @Secured({ADMIN, MANAGER, USER})
+    @GetMapping
+    public Result find() {
+        return new Result(
+                true,
+                StatusCode.SUCCESS,
+                "Success Find",
+                toDtoConverter.convert(service.getCurrentUser())
+        );
+    }
+    @Secured({ADMIN})
+    @GetMapping("/{id}")
+    public Result findById(@PathVariable String id) {
+        return new Result(
+                true,
+                StatusCode.SUCCESS,
+                "Success Find By Id",
+                toDtoConverter.convert(service.find(id))
+        );
+    }
+
+В проекте также реализована обработка ошибок безопасности, обеспечивающая корректное реагирование системы на попытки несанкционированного доступа. Для этих целей используются собственные обработчики ошибок – классы CustomBearerTokenAuthenticationEntryPoint и CustomBearerTokenAccessDeniedHandler. Они перехватывают исключительные ситуации, возникающие при недействительных токенах или недостаточных правах пользователя.
+Класс CustomBearerTokenAuthenticationEntryPoint обрабатывает случаи, когда пользователь не прошёл аутентификацию, и возвращает соответствующий ответ клиенту с кодом 401 (Unauthorized). Класс CustomBearerTokenAccessDeniedHandler отвечает за обработку ошибок авторизации – например, когда пользователь пытается получить доступ к ресурсу, не имея нужных прав, в результате чего возвращается ответ с кодом 403 (Forbidden).
+Оба компонента используют интерфейс HandlerExceptionResolver, что позволяет централизованно управлять обработкой ошибок и формировать единообразные ответы клиенту. Такой подход повышает устойчивость и безопасность приложения, а также обеспечивает понятную и стандартизированную реакцию на нарушения доступа. Ниже представлен код реализации механизма.
+
+@Component
+public class CustomBearerTokenAccessDeniedHandler implements AccessDeniedHandler {
+    private final HandlerExceptionResolver resolver;
+    public CustomBearerTokenAccessDeniedHandler(@Qualifier("handlerExceptionResolver") HandlerExceptionResolver resolver) {
+        this.resolver = resolver;
+    }
+    @Override
+    public void handle(HttpServletRequest request, HttpServletResponse response, AccessDeniedException accessDeniedException) {
+        resolver.resolveException(request, response, null, accessDeniedException);
+    }
+}
+@Component
+public class CustomBearerTokenAuthenticationEntryPoint implements AuthenticationEntryPoint {
+    private final HandlerExceptionResolver resolver;
+    public CustomBearerTokenAuthenticationEntryPoint(@Qualifier("handlerExceptionResolver") HandlerExceptionResolver resolver) {
+        this.resolver = resolver;
+    }
+    @Override
+    public void commence(HttpServletRequest request, HttpServletResponse response, AuthenticationException authException) {
+        resolver.resolveException(request, response, null, authException);
+    }
+}
+
+Реализованные механизмы безопасности обеспечивают защиту данных, предотвращают несанкционированный доступ и повышают надёжность и устойчивость информационной системы.
+
 
 ### Оценка качества кода
 
